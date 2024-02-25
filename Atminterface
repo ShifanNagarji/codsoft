@@ -1,0 +1,122 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+class BankAccount {
+    private double balance;
+
+    public BankAccount(double initialBalance) {
+        balance = initialBalance;
+    }
+
+    public boolean deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid deposit amount.");
+            return false;
+        }
+    }
+
+    public boolean withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            return true;
+        } else {
+            JOptionPane.showMessageDialog(null, "Invalid withdrawal amount or insufficient funds.");
+            return false;
+        }
+    }
+
+    public double checkBalance() {
+        return balance;
+    }
+}
+
+class ATM extends JFrame {
+    private BankAccount userAccount;
+
+    public ATM(BankAccount userAccount) {
+        this.userAccount = userAccount;
+
+        setTitle("ATM Machine");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+
+        initUI();
+    }
+
+    private void initUI() {
+        JPanel panel = new JPanel();
+        getContentPane().add(panel);
+        placeComponents(panel);
+
+        setVisible(true);
+    }
+
+    private void placeComponents(JPanel panel) {
+        panel.setLayout(null);
+
+        JButton withdrawButton = new JButton("Withdraw");
+        withdrawButton.setBounds(10, 20, 120, 25);
+        panel.add(withdrawButton);
+
+        JButton depositButton = new JButton("Deposit");
+        depositButton.setBounds(140, 20, 120, 25);
+        panel.add(depositButton);
+
+        JButton balanceButton = new JButton("Check Balance");
+        balanceButton.setBounds(10, 60, 250, 25);
+        panel.add(balanceButton);
+
+        withdrawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String amountString = JOptionPane.showInputDialog("Enter withdrawal amount:");
+                if (amountString != null) {
+                    double amount = Double.parseDouble(amountString);
+                    if (userAccount.withdraw(amount)) {
+                        JOptionPane.showMessageDialog(null, "Withdrawal successful.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Withdrawal failed.");
+                    }
+                }
+            }
+        });
+
+        depositButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String amountString = JOptionPane.showInputDialog("Enter deposit amount:");
+                if (amountString != null) {
+                    double amount = Double.parseDouble(amountString);
+                    if (userAccount.deposit(amount)) {
+                        JOptionPane.showMessageDialog(null, "Deposit successful.");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Deposit failed.");
+                    }
+                }
+            }
+        });
+
+        balanceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                double balance = userAccount.checkBalance();
+                JOptionPane.showMessageDialog(null, "Current balance: $" + balance);
+            }
+        });
+    }
+}
+
+public class ATMInt {
+    public static void main(String[] args) {
+        String initialBalanceString = JOptionPane.showInputDialog("Enter initial account balance:");
+        double initialBalance = Double.parseDouble(initialBalanceString);
+
+        BankAccount userAccount = new BankAccount(initialBalance);
+        SwingUtilities.invokeLater(() -> new ATM(userAccount));
+    }
+}
